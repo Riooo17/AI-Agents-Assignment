@@ -1,0 +1,73 @@
+{
+  "name": "AutoParts AI Agent Workflow",
+  "nodes": [
+    {
+      "id": "1",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger"
+    },
+    {
+      "id": "2",
+      "name": "Fetch Machine Sensor Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "parameters": {
+        "url": "https://api.mocki.io/v1/autoparts-sensors-demo",
+        "method": "GET"
+      }
+    },
+    {
+      "id": "3",
+      "name": "Defect Prediction Agent",
+      "type": "n8n-nodes-base.openAi",
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "prompt": "Analyze this machine sensor data and predict defect probability. Provide recommended interventions."
+      }
+    },
+    {
+      "id": "4",
+      "name": "IF High Defect Rate",
+      "type": "n8n-nodes-base.if",
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "operation": "larger",
+              "value1": "={{$json.defect_probability}}",
+              "value2": 0.15
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "5",
+      "name": "Production Optimization Agent",
+      "type": "n8n-nodes-base.openAi",
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "prompt": "Optimize the production schedule considering machine availability and customer priorities."
+      }
+    },
+    {
+      "id": "6",
+      "name": "Notify Plant Manager",
+      "type": "n8n-nodes-base.emailSend",
+      "parameters": {
+        "to": "manager@autoparts.com",
+        "subject": "AI Agent Production Update",
+        "text": "Production updated based on predictive maintenance findings."
+      }
+    }
+  ],
+  "connections": {
+    "1": { "main": [[ { "node": "2", "type": "main", "index": 0 } ]] },
+    "2": { "main": [[ { "node": "3", "type": "main", "index": 0 } ]] },
+    "3": { "main": [[ { "node": "4", "type": "main", "index": 0 } ]] },
+    "4": { "main": [
+      [{ "node": "5", "type": "main", "index": 0 }],
+      []
+    ]},
+    "5": { "main": [[ { "node": "6", "type": "main", "index": 0 } ]] }
+  }
+}
