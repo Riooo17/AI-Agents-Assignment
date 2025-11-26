@@ -5,7 +5,7 @@ This repository contains the full submission for the AI Agents coursework.
 ## Files Included
 - Section1_ShortAnswers.pdf
 - Section2_CaseStudy.pdf
-- simulation_workflow.json (optional)
+- Simulation
 - README.md
   
 ## Simulation (n8n Workflow)
